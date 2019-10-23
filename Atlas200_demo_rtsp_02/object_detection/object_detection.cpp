@@ -582,8 +582,7 @@ int ObjectDetectionInferenceEngine::GetIntChannelId(const string channel_id) {
   }
 }
 
-bool ObjectDetectionInferenceEngine::ConvertVideoFrameToHfbc(
-    const shared_ptr<VideoImageParaT> &video_image) {
+bool ObjectDetectionInferenceEngine::ConvertVideoFrameToHfbc(const shared_ptr<VideoImageParaT> &video_image) {
   IDVPPAPI* dvpp_api = nullptr;
   if (video_image->video_image_info.channel_id == kStrChannelId1) {
     if (dvpp_api_channel1_ == nullptr) { // chech dvpp api is nullptr
@@ -748,13 +747,11 @@ HIAI_IMPL_ENGINE_PROCESS("object_detection", ObjectDetectionInferenceEngine,
 
   if (arg0 == nullptr) {
     // inputer data is nullptr.
-    HIAI_ENGINE_LOG(HIAI_ENGINE_RUN_ARGS_NOT_RIGHT,
-                    "[ODInferenceEngine] input data is null!");
+    HIAI_ENGINE_LOG(HIAI_ENGINE_RUN_ARGS_NOT_RIGHT, "[ODInferenceEngine] input data is null!");
     return HIAI_ERROR;
   }
 
-  shared_ptr<VideoImageParaT> video_image =
-      static_pointer_cast<VideoImageParaT>(arg0);
+  shared_ptr<VideoImageParaT> video_image = static_pointer_cast<VideoImageParaT>(arg0);
 
   if (video_image->video_image_info.is_finished) {
     // input is finished.

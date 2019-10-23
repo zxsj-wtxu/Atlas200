@@ -20,7 +20,7 @@
 #include <vector>
 #include <stdint.h>
 #include <stdio.h>
-#define INPUT_SIZE 1
+#define INPUT_SIZE 3
 #define OUTPUT_SIZE 1
 #define DEFAULT_BATCH_SIZE 1
 #define DEFAULT_RANDOM_NUMBER 0
@@ -63,122 +63,6 @@ public:
     */
     HIAI_DEFINE_PROCESS(INPUT_SIZE, OUTPUT_SIZE)
 private:
-    /**
-    * @brief: Send Sentinel Image
-    */
-    HIAI_StatusT SendSentinelImage();
-
-    /**
-    * @brief: get the image buffer
-    * @[in]: path, the image path;
-    * @[in]: imageBufferPtr, the point of image buffer;
-    * @[in]: imageBufferLen, the buffer length;
-    * @[in]: frameId, the start of file offset
-    * @[return]: bool, if success return true, else return false
-    */
-    bool GetImageBuffer(const char* path, uint8_t* imageBufferPtr, uint32_t imageBufferLen, uint32_t frameId);
-
-    /**
-    * @brief: send batch for Emulator and OI
-    * @[in]: batchId, batchId;
-    * @[in]: batchNum, the total number of batch;
-    * @[in]: imageInfoBatch, the send data;
-    * @[return]: HIAI_StatusT
-    */
-    HIAI_StatusT SendBatch(int batchId, int batchNum, std::shared_ptr<BatchImageParaWithScaleT> imageInfoBatch);
-
-    /**
-    * @brief: send batch for EVB
-    * @[in]: batchId, batchId;
-    * @[in]: batchNum, the total number of batch;
-    * @[in]: evbImageInfoBatch, the send data;
-    * @[return]: HIAI_StatusT
-    */
-    HIAI_StatusT SendEvbBatch(int batchId, int batchNum, std::vector<std::shared_ptr<EvbImageInfo>>& evbImageInfoBatch);
-    
-    /**
-    * @brief: convert image info to NewImageParaT
-    * @[in]: index, index of image in dataset_info_
-    * @[out]: imgData, the point of data image
-    * @[return]: HIAI_StatusT
-    */
-    HIAI_StatusT makeImageInfo(NewImageParaT* imgData, int index);
-    
-    /**
-    * @brief: convert image info to EvbImageInfo
-    * @[in]: index, index of image in dataset_info_
-    * @[return]: shared_ptr<EvbImageInfo>, if null, means error
-    */
-    shared_ptr<EvbImageInfo> makeEvbImageInfo(int index);
-
-    /**
-    * @brief: get the frame id
-    * @[in]: index, if runMode is all, index is index of image in dataset_info_, else index is index of select_images_
-    * @[return]: 
-    */
-    int GetFrameId(int index);
-
-    /**
-    * @brief: get the total count
-    * @[return]: if runMode is all, return the size of dataset_info_, else return the size of select_images_
-    */
-    int GetTotalCount();
-
-    void FreeEvbBuffer(const std::vector<std::shared_ptr<EvbImageInfo>>& evbImageInfoBatch, int start);
-    /**
-    * @brief: run images on same side, all engine at same side
-    * @[return]: HIAI_StatusT
-    */
-    HIAI_StatusT RunOnSameSide();
-
-    /**
-    * @brief: run images on different side, part of engines on host side, other engines on device side
-    * @[return]: HIAI_StatusT
-    */
-    HIAI_StatusT RunOnDifferentSide();
-
-    /**
-    * @brief: check whether run images on same side
-    * @[return]: HIAI_StatusT
-    */
-    bool isOnSameSide();
-
-    /**
-    * @brief: check whether the string is number
-    * @[in]: value
-    * @[return]: bool, if value is number, return true, else return false
-    */
-    bool CheckNumber(const std::string& value);
-
-    /**
-    * @brief: get the random images
-    */
-    void GetRandomImages();
-
-    /**
-    * @brief: get batch size
-    * @[in]: value, the batch size
-    */
-    void GetBatchSize(const std::string& value);
-
-    /**
-    * @brief: get the select images
-    * @[in]: value, the select images string, format is '1,2,3,'
-    */
-    void GetSelectImages(const std::string& value);
-
-    /**
-    * @brief: get the select images or random images
-    * @[in]: selectImages, the select images string, format is '1,2,3,'
-    * @[in]: randomNumber, the random number
-    */
-    void GetSelectOrRandomImages(const std::string& selectImages, const std::string& randomNumber);
-
-    /**
-    * @brief: read data.info file, then convert to dataset_info_
-    * @[return]: HIAI_StatusT
-    */
-    HIAI_StatusT MakeDatasetInfo();
 
     //the config of dataset
     std::shared_ptr<DataConfig> data_config_;

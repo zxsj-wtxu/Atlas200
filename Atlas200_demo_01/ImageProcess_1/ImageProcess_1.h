@@ -24,8 +24,7 @@ using namespace std;
 using namespace hiai;
 class ImageProcess_1 : public Engine {
 public:
-    ImageProcess_1() :
-        input_que_(INPUT_SIZE) {}
+    ImageProcess_1() : input_que_(INPUT_SIZE) {}
     HIAI_StatusT Init(const hiai::AIConfig& config, const std::vector<hiai::AIModelDescription>& model_desc);
     /**
     * @ingroup hiaiengine

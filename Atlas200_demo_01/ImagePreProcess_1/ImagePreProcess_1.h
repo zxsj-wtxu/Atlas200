@@ -139,20 +139,6 @@ public:
     HIAI_DEFINE_PROCESS(INPUT_SIZE, OUTPUT_SIZE);
 
 private:
-    bool NeedCrop();
-    void ClearData();
-    int HandleJpeg(const ImageData<u_int8_t> &img);
-    int HandlePng(const ImageData<u_int8_t> &img);
-    int HandleVpc(const ImageData<u_int8_t> &img);
-    int HandleVpcWithParam(const unsigned char* buffer, const int &width, const int &height, const long &bufferSize,
-        const ImageData<u_int8_t> &img, const FILE_TYPE &type, const int &format);
-    bool ProcessCrop(VpcUserCropConfigure &area, const int &width, const int &height, const int &realWidth, const int &realHeight);
-    bool SendPreProcessData();
-    int StorePreprocessImage(const u_int8_t *outBuffer, const uint32_t &size, const DvppPreprocessInfo &info);
-    int HandleDvpp();
-    int UpdateCropPara(const Rectangle<Point2D> &rect);
-
-private:
     std::shared_ptr<DvppConfig> dvppConfig_;
     std::shared_ptr<BatchImageParaWithScaleT> dvppOut_;
     std::shared_ptr<BatchImageParaWithScaleT> dvppIn_;
@@ -162,6 +148,7 @@ private:
     uint32_t imageFrameID_;
     uint32_t orderInFrame_; //multi net for mark order from one image cutout
     hiai::MultiTypeQueue inputQue_;
+    uint32_t id = 0;
 };
 
 #endif //ImagePreProcess_1_H_

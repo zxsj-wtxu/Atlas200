@@ -15,7 +15,7 @@
 #include <map>
 #include "BatchImageParaWithScale.h"
 
-#define INPUT_SIZE 1
+#define INPUT_SIZE 2
 #define OUTPUT_SIZE 1
 
 using hiai::Engine;
@@ -48,7 +48,6 @@ private:
     /**
     * @brief: send sentinel image to inform the graph to destroy
     */
-    HIAI_StatusT SendSentinelImage();
 };
 
 #endif

@@ -141,8 +141,7 @@ void VideoDecode::SendFinishedData() {
 
   // send finished data to next engine, use output port:0
   do {
-    hiai_ret = SendData(0, kVideoImageParaType,
-                        static_pointer_cast<void>(video_image_para));
+    hiai_ret = SendData(0, kVideoImageParaType, static_pointer_cast<void>(video_image_para));
     if (hiai_ret == HIAI_QUEUE_FULL) { // check hiai queue is full
       HIAI_ENGINE_LOG("Queue full when send finished data, sleep 10ms");
       usleep(kWait10Milliseconds); // sleep 10 ms
@@ -150,8 +149,7 @@ void VideoDecode::SendFinishedData() {
   } while (hiai_ret == HIAI_QUEUE_FULL); // loop when hiai queue is full
 
   if (hiai_ret != HIAI_OK) {
-    HIAI_ENGINE_LOG(HIAI_ENGINE_RUN_ARGS_NOT_RIGHT,
-                    "Send finished data failed! error code: %d", hiai_ret);
+    HIAI_ENGINE_LOG(HIAI_ENGINE_RUN_ARGS_NOT_RIGHT, "Send finished data failed! error code: %d", hiai_ret);
   }
 }
 
@@ -213,8 +211,7 @@ const string &VideoDecode::GetChannelValue(const string &channel_id) {
   }
 }
 
-void VideoDecode::SetDictForRtsp(const string& channel_value,
-                                 AVDictionary* &avdic) {
+void VideoDecode::SetDictForRtsp(const string& channel_value,  AVDictionary* &avdic) {
   if (IsValidRtsp(channel_value)) { // check channel value is valid rtsp address
     HIAI_ENGINE_LOG("Set parameters for %s", channel_value.c_str());
     avformat_network_init();
@@ -229,14 +226,11 @@ void VideoDecode::SetDictForRtsp(const string& channel_value,
   }
 }
 
-bool VideoDecode::OpenVideoFromInputChannel(
-    const string &channel_value, AVFormatContext* &av_format_context) {
+bool VideoDecode::OpenVideoFromInputChannel( const string &channel_value, AVFormatContext* &av_format_context) {
   AVDictionary* avdic = nullptr;
   SetDictForRtsp(channel_value, avdic);
 
-  int ret_open_input_video = avformat_open_input(&av_format_context,
-                                                 channel_value.c_str(), nullptr,
-                                                 &avdic);
+  int ret_open_input_video = avformat_open_input(&av_format_context, channel_value.c_str(), nullptr, &avdic);
 
   if (ret_open_input_video < kHandleSuccessful) { // check open video result
     char buf_error[kErrorBufferSize];
@@ -311,8 +305,7 @@ void VideoDecode::UnpackVideo2Image(const string &channel_id) {
   string thread_name = kThreadNameHead + channel_id;
   prctl(PR_SET_NAME, (unsigned long) thread_name.c_str());
   prctl(PR_GET_NAME, (unsigned long) thread_name_log);
-  HIAI_ENGINE_LOG("Unpack video to image from:%s, thread name:%s",
-                  channel_id.c_str(), thread_name_log);
+  HIAI_ENGINE_LOG("Unpack video to image from:%s, thread name:%s", channel_id.c_str(), thread_name_log);
 
   string channel_value = GetChannelValue(channel_id);
   AVFormatContext* av_format_context = avformat_alloc_context();
@@ -345,15 +338,12 @@ void VideoDecode::UnpackVideo2Image(const string &channel_id) {
     if (av_packet.stream_index == videoindex) { // check current stream is video
       // send video packet to ffmpeg
       if (av_bsf_send_packet(bsf_ctx, &av_packet) != kHandleSuccessful) {
-        HIAI_ENGINE_LOG(HIAI_ENGINE_RUN_ARGS_NOT_RIGHT,
-                        "Fail to call av_bsf_send_packet, channel id:%s",
-                        channel_id.c_str());
+        HIAI_ENGINE_LOG(HIAI_ENGINE_RUN_ARGS_NOT_RIGHT, "Fail to call av_bsf_send_packet, channel id:%s", channel_id.c_str());
       }
 
       // receive single frame from ffmpeg
       while (av_bsf_receive_packet(bsf_ctx, &av_packet) == kHandleSuccessful) {
-        shared_ptr<VideoImageParaT> video_image_para = make_shared<
-            VideoImageParaT>();
+        shared_ptr<VideoImageParaT> video_image_para = make_shared<VideoImageParaT>();
         video_image_para->video_image_info.channel_id = channel_id;
         video_image_para->video_image_info.channel_name = channel_value;
         video_image_para->video_image_info.is_finished = false;
@@ -364,8 +354,7 @@ void VideoDecode::UnpackVideo2Image(const string &channel_id) {
         }
 
         uint8_t* vdec_in_buffer = new (nothrow) uint8_t[av_packet.size];
-        int memcpy_result = memcpy_s(vdec_in_buffer, av_packet.size,
-                                     av_packet.data, av_packet.size);
+        int memcpy_result = memcpy_s(vdec_in_buffer, av_packet.size, av_packet.data, av_packet.size);
         if (memcpy_result != EOK) { // check memcpy_s result
           HIAI_ENGINE_LOG(
               HIAI_ENGINE_RUN_ARGS_NOT_RIGHT,
@@ -375,8 +364,7 @@ void VideoDecode::UnpackVideo2Image(const string &channel_id) {
           return;
         }
 
-        video_image_para->img.data.reset(vdec_in_buffer,
-                                         default_delete<uint8_t[]>());
+        video_image_para->img.data.reset(vdec_in_buffer, default_delete<uint8_t[]>());
         video_image_para->img.size = av_packet.size;
 
         av_packet_unref(&av_packet);
@@ -398,16 +386,13 @@ void VideoDecode::UnpackVideo2Image(const string &channel_id) {
 }
 
 bool VideoDecode::VerifyVideoWithUnpack(const string &channel_value) {
-  HIAI_ENGINE_LOG("Start to verify unpack video file:%s",
-                  channel_value.c_str());
+  HIAI_ENGINE_LOG("Start to verify unpack video file:%s", channel_value.c_str());
 
   AVFormatContext* av_format_context = avformat_alloc_context();
   AVDictionary* avdic = nullptr;
   SetDictForRtsp(channel_value, avdic);
 
-  int ret_open_input_video = avformat_open_input(&av_format_context,
-                                                 channel_value.c_str(), nullptr,
-                                                 &avdic);
+  int ret_open_input_video = avformat_open_input(&av_format_context, channel_value.c_str(), nullptr, &avdic);
   if (ret_open_input_video < kHandleSuccessful) { // check open video result
     char buf_error[kErrorBufferSize];
     av_strerror(ret_open_input_video, buf_error, kErrorBufferSize);
@@ -447,8 +432,7 @@ bool VideoDecode::VerifyVideoWithUnpack(const string &channel_value) {
 
 bool VideoDecode::VerifyVideoType() {
   // check channel1 and channel2 is not empty
-  if (!IsEmpty(channel1_, kStrChannelId1)
-      && !IsEmpty(channel2_, kStrChannelId2)) {
+  if (!IsEmpty(channel1_, kStrChannelId1) && !IsEmpty(channel2_, kStrChannelId2)) {
     return (VerifyVideoWithUnpack(channel1_) && VerifyVideoWithUnpack(channel2_));
   } else if (!IsEmpty(channel1_, kStrChannelId1)) { // channel1 is not empty
     return VerifyVideoWithUnpack(channel1_);
@@ -459,12 +443,9 @@ bool VideoDecode::VerifyVideoType() {
 
 void VideoDecode::MultithreadHandleVideo() {
   // create two thread unpacke channel1 and channel2 video in same time
-  if (!IsEmpty(channel1_, kStrChannelId1)
-      && !IsEmpty(channel2_, kStrChannelId2)) {
-    thread thread_channel_1(&VideoDecode::UnpackVideo2Image, this,
-                            kStrChannelId1);
-    thread thread_channel_2(&VideoDecode::UnpackVideo2Image, this,
-                            kStrChannelId2);
+  if (!IsEmpty(channel1_, kStrChannelId1) && !IsEmpty(channel2_, kStrChannelId2)) {
+    thread thread_channel_1(&VideoDecode::UnpackVideo2Image, this, kStrChannelId1);
+    thread thread_channel_2(&VideoDecode::UnpackVideo2Image, this, kStrChannelId2);
 
     thread_channel_1.join();
     thread_channel_2.join();
@@ -603,8 +584,7 @@ void VideoDecode::SendImageData(shared_ptr<VideoImageParaT> &video_image_data) {
 
   // send image data
   do {
-    hiai_ret = SendData(0, kVideoImageParaType,
-                        static_pointer_cast<void>(video_image_data));
+    hiai_ret = SendData(0, kVideoImageParaType, static_pointer_cast<void>(video_image_data));
     if (hiai_ret == HIAI_QUEUE_FULL) { // check queue is full
       HIAI_ENGINE_LOG("The queue is full when send image data, sleep 10ms");
       usleep(kWait10Milliseconds); // sleep 10 ms
@@ -612,8 +592,7 @@ void VideoDecode::SendImageData(shared_ptr<VideoImageParaT> &video_image_data) {
   } while (hiai_ret == HIAI_QUEUE_FULL); // loop while queue is full
 
   if (hiai_ret != HIAI_OK) { // check send data is failed
-    HIAI_ENGINE_LOG(HIAI_ENGINE_RUN_ARGS_NOT_RIGHT,
-                    "Send data failed! error code: %d", hiai_ret);
+    HIAI_ENGINE_LOG(HIAI_ENGINE_RUN_ARGS_NOT_RIGHT, "Send data failed! error code: %d", hiai_ret);
   }
 }
 
